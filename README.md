@@ -2,20 +2,22 @@
 
 This repository analyzes public deep mutational scanning (DMS) data for the SARS-CoV-2 Spike receptor-binding domain (RBD).
 
-The current goal is **not** to design, recommend, or optimize new viral variants. Instead, this project evaluates whether simple mutation-level features can reproduce experimentally measured DMS scores for ACE2 binding and RBD expression/folding.
+The current goal is **not** to design, recommend, or optimize new viral variants. Instead, this project evaluates whether sequence-, structure-, and protein-language-model-based features can reproduce experimentally measured DMS scores for ACE2 binding and RBD expression/folding.
 
 ## Project Status
 
-Current checkpoint: **baseline DMS score reproduction analysis**
+Current checkpoint: **ESM-2 and validation split analysis**
 
 Completed steps:
 
 1. Downloaded public RBD DMS datasets.
 2. Built a unified RBD DMS table.
 3. Removed non-substitution rows where the wild-type and mutant amino acids were identical.
-4. Trained baseline models on raw ACE2 binding and expression scores.
-5. Normalized scores within each source/background group.
-6. Compared random split and site-held-out split performance.
+4. Normalized ACE2 binding and expression scores within each source/background group.
+5. Trained baseline models using mutation-level physicochemical features.
+6. Added structure-derived residue features from the 6M0J RBD-ACE2 complex.
+7. Added ESM-2 residue-level embeddings using `facebook/esm2_t6_8M_UR50D`.
+8. Evaluated multiple validation settings: random split, site-held-out, repeated site-held-out, background-held-out, and mutation-held-out.
 
 ## Dataset Summary
 
@@ -27,38 +29,41 @@ The processed substitution dataset contains:
   - ACE2 binding score
   - RBD expression/folding score
 
-Generated file:
+Generated files are excluded from GitHub by `.gitignore` and are recreated by running the pipeline.
 
-```text
-data/processed/rbd_dms_substitutions_v0.csv
-```
+## Main Findings
 
-Generated files are excluded from GitHub by `.gitignore`.
+The validation results show a clear difference between interpolation and generalization difficulty.
 
-## Baseline Modeling
+### Easier validation settings
 
-Two baseline experiments were performed.
+Background-held-out and mutation-held-out validation showed strong performance, especially when ESM-2 features were used.
 
-### 1. Raw-score baseline
+- Background-held-out, RandomForest, ESM features:
+  - ACE2 binding: mean R2 about 0.91
+  - Expression: mean R2 about 0.94
+- Mutation-held-out, RandomForest, structure + ESM + background features:
+  - ACE2 binding: mean R2 about 0.81
+  - Expression: mean R2 about 0.81
 
-Raw DMS scores were used directly as prediction targets. Random forest models produced very high scores, but this was likely inflated by score-scale differences between datasets and backgrounds.
+These results suggest that the model can predict new substitutions within already represented residue positions and transfer reasonably well across measured variant backgrounds.
 
-### 2. Normalized-score baseline
+### Hardest validation setting
 
-ACE2 binding and expression scores were normalized within each source/background group using z-scores.
+Repeated site-held-out validation remained difficult.
 
-After normalization:
+- ACE2 binding, best RandomForest feature set: mean R2 near 0
+- Expression, best RandomForest feature set: mean R2 around 0.08
 
-- Random split performance remained high.
-- Site-held-out performance dropped substantially.
+This suggests that the current features are still limited for predicting effects at completely unseen RBD residue positions.
 
-This suggests that the model can interpolate mutation effects at familiar RBD positions, but simple features are not sufficient for strong generalization to unseen RBD sites.
+## Current Interpretation
 
-## Key Finding
+The model is strongest when the residue position has already been represented in the training data. It can learn mutation-level patterns and transfer them across backgrounds or unseen substitutions at known sites.
 
-The current baseline model mainly learns patterns within already observed RBD positions. When entire residue positions are held out, prediction performance decreases sharply.
+However, full generalization to entirely unseen residue positions remains weak. The current checkpoint therefore supports the following conclusion:
 
-Therefore, the next step is to add residue-level biological context, such as structural features or protein language model embeddings, and test whether these features improve site-held-out generalization.
+> ESM-2 and structural features improve mutation-level interpolation, but unseen-site generalization remains the main limitation.
 
 ## Main Scripts
 
@@ -67,6 +72,12 @@ src/build_rbd_dms_dataset.py
 src/make_rbd_substitutions.py
 src/train_rbd_baseline.py
 src/train_rbd_baseline_normalized.py
+src/add_rbd_structural_features.py
+src/train_rbd_baseline_with_structure.py
+src/run_esm_embedding_baseline.py
+src/repeat_site_heldout_validation.py
+src/run_background_heldout_validation.py
+src/run_mutation_heldout_validation.py
 ```
 
 ## How to Run
@@ -77,17 +88,30 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run the pipeline:
+Run the main pipeline:
 
 ```bash
 python src/build_rbd_dms_dataset.py
 python src/make_rbd_substitutions.py
-python src/train_rbd_baseline.py
 python src/train_rbd_baseline_normalized.py
+python src/add_rbd_structural_features.py
+python src/train_rbd_baseline_with_structure.py
+python src/run_esm_embedding_baseline.py
+python src/repeat_site_heldout_validation.py
+python src/run_background_heldout_validation.py
+python src/run_mutation_heldout_validation.py
 ```
 
-## Current Interpretation
+## Documentation
 
-The first baseline results should be interpreted as a preliminary reproducibility and validation checkpoint, not as a final biological prediction model.
+Result summaries are stored in `docs/`.
 
-The next planned step is to add structural context and evaluate whether it improves generalization under site-held-out validation.
+```text
+docs/baseline_result_summary.md
+docs/structural_feature_result_summary.md
+docs/checkpoint2_validation_summary.md
+```
+
+## Next Step
+
+The next planned experiment is to test mutant-sequence ESM delta embeddings. The current ESM experiment used reference residue embeddings only; it did not directly encode how each mutant sequence changes the local representation. A delta-embedding experiment can test whether the difference between wild-type and mutant sequence embeddings improves difficult validation settings.

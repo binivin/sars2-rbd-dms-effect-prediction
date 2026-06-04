@@ -1,105 +1,196 @@
-# RBD DMS Effect Prediction
+# RBD DMS Effect Prediction and Generalization Analysis
 
-This repository analyzes public deep mutational scanning data for the Spike receptor-binding domain. The goal is to evaluate whether sequence, structure, and protein-language-model features can reproduce experimentally measured DMS scores for receptor binding and protein expression or folding.
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Field](https://img.shields.io/badge/Field-Bioinformatics-green)](#)
+[![ML](https://img.shields.io/badge/Method-ESM--2%20%7C%20RandomForest%20%7C%20Ridge-purple)](#)
+[![Status](https://img.shields.io/badge/Status-Final%20summary%20complete-brightgreen)](#)
 
-## Project Status
+> Deep mutational scanning score prediction using mutation features, structure-derived annotations, reference ESM-2 embeddings, delta ESM embeddings, and validation-split analysis.
 
-Current checkpoint: **final project summary**
+This repository contains a computational biology pipeline for analyzing RBD deep mutational scanning data. The project evaluates whether amino-acid substitution effects on receptor binding and protein expression/folding can be reproduced using sequence, structure, and protein-language-model features.
 
-Completed steps:
+The main finding is that the model performs well when predicting new substitutions at already represented residue positions, but generalization to completely unseen residue positions remains difficult.
 
-1. Downloaded public RBD DMS datasets.
-2. Built a unified DMS table.
-3. Removed non-substitution rows where the wild-type and mutant amino acids were identical.
-4. Normalized binding and expression scores within each source/background group.
-5. Trained baseline models using mutation-level physicochemical features.
-6. Added structure-derived residue features from the 6M0J receptor-binding complex.
-7. Added ESM-2 reference residue-level embeddings using `facebook/esm2_t6_8M_UR50D`.
-8. Evaluated random split, site-held-out, repeated site-held-out, background-held-out, and mutation-held-out validation settings.
-9. Added mutant-sequence delta ESM features and compared them with reference ESM features.
-10. Performed grouped feature-importance and difficult-site analyses.
-11. Wrote the final project summary.
+---
 
-## Dataset Summary
+## Highlights
 
-The processed substitution dataset contains:
+- Built a unified RBD DMS substitution dataset with **22,572 amino-acid substitutions**.
+- Normalized binding and expression/folding scores within each source/background group.
+- Engineered mutation-level physicochemical features.
+- Added structure-derived residue annotations from the **6M0J** receptor-binding complex.
+- Added **reference ESM-2 residue embeddings** using `facebook/esm2_t6_8M_UR50D`.
+- Added **mutant-sequence delta ESM features** to represent mutation-induced embedding changes.
+- Compared random split, background-held-out, mutation-held-out, and site-held-out validation.
+- Performed grouped feature-importance analysis.
+- Identified difficult residue positions under site-held-out validation.
 
-- 22,572 RBD amino-acid substitutions
-- 5 measured backgrounds: Wuhan-Hu-1, Delta, Beta, E484K, and N501Y
-- 2 prediction targets:
-  - receptor-binding score
-  - protein expression/folding score
+---
 
-Generated files are excluded from GitHub by `.gitignore` and are recreated by running the pipeline.
-
-## Main Findings
-
-The validation results show a clear difference between interpolation and generalization difficulty.
-
-### Easier validation settings
-
-Background-held-out and mutation-held-out validation showed strong performance, especially when ESM-2 features were used.
-
-- Background-held-out, RandomForest, ESM features:
-  - binding: mean R2 about 0.91
-  - expression: mean R2 about 0.94
-- Mutation-held-out, RandomForest, reference ESM + structure + background features:
-  - binding: mean R2 about 0.81
-  - expression: mean R2 about 0.81
-
-These results suggest that the model can predict new substitutions within already represented residue positions and transfer reasonably well across measured backgrounds.
-
-### Hardest validation setting
-
-Repeated site-held-out validation remained difficult.
-
-- Binding, delta ESM + structure + background, RandomForest: mean R2 about 0.03
-- Expression, delta ESM + structure + background, RandomForest: mean R2 about 0.12
-
-This suggests that mutant-sequence delta ESM features provide a modest improvement for unseen-site prediction, but full generalization to completely unseen residue positions remains limited.
-
-### Feature importance and difficult sites
-
-Grouped permutation importance showed that reference ESM features dominate mutation-held-out prediction, while delta ESM provides modest information for site-held-out binding prediction.
-
-Difficult-site analysis showed that site-held-out errors were not uniformly distributed across the RBD. Binding errors were enriched around receptor-binding-motif-associated positions, while expression/folding errors appeared across both receptor-binding-motif and non-receptor-binding-motif sites.
-
-## Current Interpretation
-
-The model is strongest when the residue position has already been represented in the training data. It can learn mutation-level patterns and transfer them across backgrounds or unseen substitutions at known sites.
-
-Reference ESM features are strongest for known-site interpolation, especially mutation-held-out validation. Delta ESM features are more useful for the hardest site-held-out setting, but the improvement is still small.
-
-The current checkpoint supports the following conclusion:
-
-> ESM-2 and structural features improve mutation-level interpolation, while mutant-sequence delta ESM features slightly improve unseen-site generalization. However, unseen-site prediction remains the main limitation.
-
-## Main Scripts
+## Project workflow
 
 ```text
-src/build_rbd_dms_dataset.py
-src/make_rbd_substitutions.py
-src/train_rbd_baseline.py
-src/train_rbd_baseline_normalized.py
-src/add_rbd_structural_features.py
-src/train_rbd_baseline_with_structure.py
-src/run_esm_embedding_baseline.py
-src/repeat_site_heldout_validation.py
-src/run_background_heldout_validation.py
-src/run_mutation_heldout_validation.py
-src/run_delta_esm_validation.py
-src/analyze_difficult_sites.py
+Public RBD DMS data
+  -> unified substitution dataset construction
+  -> source/background-level score normalization
+  -> mutation-level feature engineering
+  -> structure feature annotation from 6M0J
+  -> reference ESM-2 residue embedding
+  -> mutant-sequence delta ESM embedding
+  -> baseline model training
+  -> validation split comparison
+  -> grouped feature-importance analysis
+  -> difficult-site analysis
+  -> final interpretation
 ```
 
-## How to Run
+---
 
-Install dependencies:
+## Data sources
+
+The analysis uses public RBD deep mutational scanning datasets and a public protein complex structure.
+
+| Source | Role in this project |
+|---|---|
+| RBD DMS datasets | Experimental binding and expression/folding scores |
+| 6M0J structure | Structure-derived receptor-interface and distance features |
+| ESM-2 | Protein-language-model residue embeddings |
+
+Generated data files and model output tables are excluded from GitHub by `.gitignore` and can be recreated by running the pipeline.
+
+---
+
+## Main results
+
+### 1. Random split performance can overestimate generalization
+
+Random split validation produced high performance because similar residue positions and substitutions can appear in both training and test sets. Therefore, random split performance was treated as a basic reproduction check rather than the main evidence of generalization.
+
+---
+
+### 2. Background-held-out validation showed strong transfer across measured backgrounds
+
+When one measured background was held out at a time, models with ESM features retained strong performance.
+
+| Target | Best model setting | Mean R2 |
+|---|---|---:|
+| Binding | RandomForest with ESM features | ~0.91 |
+| Expression/folding | RandomForest with ESM features | ~0.94 |
+
+This suggests that mutation-effect patterns can transfer across the measured backgrounds in this dataset.
+
+---
+
+### 3. Mutation-held-out validation showed strong known-site interpolation
+
+Mutation-held-out validation removed specific substitution identities from training. The best models still performed well when the residue position was represented by other substitutions.
+
+| Target | Best model setting | Mean R2 |
+|---|---|---:|
+| Binding | RandomForest with reference ESM + structure + background | ~0.81 |
+| Expression/folding | RandomForest with reference ESM + structure + background | ~0.81 |
+
+This indicates that the model can predict unseen substitutions at already represented residue positions.
+
+---
+
+### 4. Site-held-out validation remained difficult
+
+Site-held-out validation removed entire residue positions from training. This was the hardest and most biologically important validation setting.
+
+| Target | Best model setting | Mean R2 |
+|---|---|---:|
+| Binding | RandomForest with delta ESM + structure + background | ~0.03 |
+| Expression/folding | RandomForest with delta ESM + structure + background | ~0.12 |
+
+Delta ESM features modestly improved unseen-site prediction, but the overall performance remained limited.
+
+---
+
+### 5. Reference ESM was the dominant feature group for mutation-held-out prediction
+
+Grouped permutation importance showed that reference ESM features were the most important feature group in mutation-held-out validation.
+
+| Validation | Target | Most important feature group | Interpretation |
+|---|---|---|---|
+| Mutation-held-out | Binding | Reference ESM | Sequence-context information drives known-site interpolation |
+| Mutation-held-out | Expression/folding | Reference ESM | Residue context strongly supports prediction |
+| Site-held-out | Binding | Reference ESM + delta ESM | ESM features help, but do not fully solve unseen-site extrapolation |
+
+---
+
+### 6. Difficult-site analysis revealed position-specific model failures
+
+The most difficult sites by combined binding and expression/folding error included:
+
+```text
+454, 442, 355, 398, 379, 467, 490, 350, 423, 461
+```
+
+Binding prediction errors were enriched around receptor-binding-motif-associated positions such as:
+
+```text
+490, 504, 442, 454, 487, 483, 499
+```
+
+Expression/folding errors appeared across both receptor-binding-motif and non-receptor-binding-motif positions, suggesting that expression/folding effects may reflect broader stability-sensitive regions.
+
+---
+
+## Interpretation
+
+The validation results support the following interpretation:
+
+> The model can reproduce DMS patterns and interpolate mutation effects at already represented residue positions, but it does not reliably extrapolate to completely unseen residue positions.
+
+This means the project should be interpreted as a DMS effect reproduction, interpolation, and model-limitation analysis rather than a fully general predictor of unseen residue effects.
+
+The main value of this project is not only the model performance itself, but the validation design that separates easy interpolation from difficult extrapolation.
+
+---
+
+## Repository structure
+
+```text
+sars2-rbd-dms-effect-prediction/
+├─ README.md
+├─ requirements.txt
+├─ src/
+│  ├─ build_rbd_dms_dataset.py
+│  ├─ make_rbd_substitutions.py
+│  ├─ train_rbd_baseline.py
+│  ├─ train_rbd_baseline_normalized.py
+│  ├─ add_rbd_structural_features.py
+│  ├─ train_rbd_baseline_with_structure.py
+│  ├─ run_esm_embedding_baseline.py
+│  ├─ repeat_site_heldout_validation.py
+│  ├─ run_background_heldout_validation.py
+│  ├─ run_mutation_heldout_validation.py
+│  ├─ run_delta_esm_validation.py
+│  └─ analyze_difficult_sites.py
+├─ docs/
+│  ├─ baseline_result_summary.md
+│  ├─ structural_feature_result_summary.md
+│  ├─ checkpoint2_validation_summary.md
+│  ├─ checkpoint3_delta_esm_summary.md
+│  ├─ checkpoint4_interpretability_summary.md
+│  ├─ final_project_summary.md
+│  └─ project_summary_ko.md
+├─ data/                  # local generated data, excluded from GitHub
+└─ artifacts/             # generated tables and outputs, mostly excluded from GitHub
+```
+
+---
+
+## How to reproduce
+
+### 1. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the main pipeline:
+### 2. Run the main analysis pipeline
 
 ```bash
 python src/build_rbd_dms_dataset.py
@@ -115,19 +206,39 @@ python src/run_delta_esm_validation.py
 python src/analyze_difficult_sites.py
 ```
 
+The ESM-related scripts may take longer on CPU because they run protein-language-model inference.
+
+---
+
 ## Documentation
 
-Result summaries are stored in `docs/`.
+| Document | Description |
+|---|---|
+| `docs/baseline_result_summary.md` | Baseline and normalization summary |
+| `docs/structural_feature_result_summary.md` | Structure feature experiment summary |
+| `docs/checkpoint2_validation_summary.md` | Reference ESM and validation split analysis |
+| `docs/checkpoint3_delta_esm_summary.md` | Delta ESM analysis |
+| `docs/checkpoint4_interpretability_summary.md` | Feature-importance and difficult-site analysis |
+| `docs/final_project_summary.md` | Final English project summary |
+| `docs/project_summary_ko.md` | Korean project summary |
 
-```text
-docs/baseline_result_summary.md
-docs/structural_feature_result_summary.md
-docs/checkpoint2_validation_summary.md
-docs/checkpoint3_delta_esm_summary.md
-docs/checkpoint4_interpretability_summary.md
-docs/final_project_summary.md
-```
+---
 
-## Final Takeaway
+## Limitations
 
-This project demonstrates that careful validation design is essential in biological effect prediction. A model can appear highly accurate under random or mutation-held-out validation but still fail when asked to predict entirely unseen residue positions.
+- The structure features rely on a single static complex structure and simple distance thresholds.
+- The ESM experiment used a small ESM-2 model; larger models may change performance.
+- Reference ESM embeddings are strong for represented positions but do not solve unseen-site prediction.
+- Delta ESM improves site-held-out prediction only modestly.
+- The model should not be interpreted as a reliable predictor for entirely unseen residue positions.
+
+---
+
+## Next steps
+
+- Prepare final report figures and validation-result tables.
+- Add visualization scripts for model-comparison plots.
+- Analyze high-error residue positions in more biological detail.
+- Test larger protein language models if computational resources allow.
+- Add conservation, solvent accessibility, or multi-structure features.
+- Convert the pipeline into a concise research report and presentation.

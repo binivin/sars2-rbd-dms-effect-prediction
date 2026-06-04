@@ -2,6 +2,12 @@
 # # RBD DMS Interpolation vs Extrapolation
 #
 # This notebook summarizes RBD DMS effect prediction results and compares interpolation-style validation with unseen-site extrapolation.
+#
+# **GitHub repository:** [sars2-rbd-dms-effect-prediction](https://github.com/binivin/sars2-rbd-dms-effect-prediction)
+#
+# **Kaggle dataset:** [RBD DMS Effect Prediction](https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction)
+#
+# The full GitHub repository contains the reproducible analysis scripts, checkpoint summaries, and project documentation. This Kaggle notebook provides a concise visualization-centered summary of the final result tables.
 
 # %%
 from pathlib import Path

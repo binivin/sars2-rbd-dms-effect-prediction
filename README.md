@@ -6,7 +6,7 @@ The current goal is **not** to design, recommend, or optimize new viral variants
 
 ## Project Status
 
-Current checkpoint: **ESM-2 and validation split analysis**
+Current checkpoint: **mutant-sequence delta ESM analysis**
 
 Completed steps:
 
@@ -16,8 +16,9 @@ Completed steps:
 4. Normalized ACE2 binding and expression scores within each source/background group.
 5. Trained baseline models using mutation-level physicochemical features.
 6. Added structure-derived residue features from the 6M0J RBD-ACE2 complex.
-7. Added ESM-2 residue-level embeddings using `facebook/esm2_t6_8M_UR50D`.
+7. Added ESM-2 reference residue-level embeddings using `facebook/esm2_t6_8M_UR50D`.
 8. Evaluated multiple validation settings: random split, site-held-out, repeated site-held-out, background-held-out, and mutation-held-out.
+9. Added mutant-sequence delta ESM features and compared them with reference ESM features.
 
 ## Dataset Summary
 
@@ -42,7 +43,7 @@ Background-held-out and mutation-held-out validation showed strong performance, 
 - Background-held-out, RandomForest, ESM features:
   - ACE2 binding: mean R2 about 0.91
   - Expression: mean R2 about 0.94
-- Mutation-held-out, RandomForest, structure + ESM + background features:
+- Mutation-held-out, RandomForest, reference ESM + structure + background features:
   - ACE2 binding: mean R2 about 0.81
   - Expression: mean R2 about 0.81
 
@@ -52,18 +53,20 @@ These results suggest that the model can predict new substitutions within alread
 
 Repeated site-held-out validation remained difficult.
 
-- ACE2 binding, best RandomForest feature set: mean R2 near 0
-- Expression, best RandomForest feature set: mean R2 around 0.08
+- ACE2 binding, delta ESM + structure + background, RandomForest: mean R2 about 0.03
+- Expression, delta ESM + structure + background, RandomForest: mean R2 about 0.12
 
-This suggests that the current features are still limited for predicting effects at completely unseen RBD residue positions.
+This suggests that mutant-sequence delta ESM features provide a modest improvement for unseen-site prediction, but full generalization to completely unseen RBD residue positions remains limited.
 
 ## Current Interpretation
 
 The model is strongest when the residue position has already been represented in the training data. It can learn mutation-level patterns and transfer them across backgrounds or unseen substitutions at known sites.
 
-However, full generalization to entirely unseen residue positions remains weak. The current checkpoint therefore supports the following conclusion:
+Reference ESM features are strongest for known-site interpolation, especially mutation-held-out validation. Delta ESM features are more useful for the hardest site-held-out setting, but the improvement is still small.
 
-> ESM-2 and structural features improve mutation-level interpolation, but unseen-site generalization remains the main limitation.
+The current checkpoint supports the following conclusion:
+
+> ESM-2 and structural features improve mutation-level interpolation, while mutant-sequence delta ESM features slightly improve unseen-site generalization. However, unseen-site prediction remains the main limitation.
 
 ## Main Scripts
 
@@ -78,6 +81,7 @@ src/run_esm_embedding_baseline.py
 src/repeat_site_heldout_validation.py
 src/run_background_heldout_validation.py
 src/run_mutation_heldout_validation.py
+src/run_delta_esm_validation.py
 ```
 
 ## How to Run
@@ -100,6 +104,7 @@ python src/run_esm_embedding_baseline.py
 python src/repeat_site_heldout_validation.py
 python src/run_background_heldout_validation.py
 python src/run_mutation_heldout_validation.py
+python src/run_delta_esm_validation.py
 ```
 
 ## Documentation
@@ -110,8 +115,16 @@ Result summaries are stored in `docs/`.
 docs/baseline_result_summary.md
 docs/structural_feature_result_summary.md
 docs/checkpoint2_validation_summary.md
+docs/checkpoint3_delta_esm_summary.md
 ```
 
 ## Next Step
 
-The next planned experiment is to test mutant-sequence ESM delta embeddings. The current ESM experiment used reference residue embeddings only; it did not directly encode how each mutant sequence changes the local representation. A delta-embedding experiment can test whether the difference between wild-type and mutant sequence embeddings improves difficult validation settings.
+The next planned checkpoint is feature-importance and model-limitation analysis.
+
+Recommended next tasks:
+
+1. Compare feature importance across mutation, structure, reference ESM, and delta ESM features.
+2. Identify difficult residue positions in repeated site-held-out validation.
+3. Summarize which validation settings represent interpolation and which represent extrapolation.
+4. Prepare figures and tables for a final report or presentation.

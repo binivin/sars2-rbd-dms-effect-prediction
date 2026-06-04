@@ -4,7 +4,7 @@ This repository analyzes public deep mutational scanning data for the Spike rece
 
 ## Project Status
 
-Current checkpoint: **interpretability and difficult-site analysis**
+Current checkpoint: **final project summary**
 
 Completed steps:
 
@@ -18,6 +18,7 @@ Completed steps:
 8. Evaluated random split, site-held-out, repeated site-held-out, background-held-out, and mutation-held-out validation settings.
 9. Added mutant-sequence delta ESM features and compared them with reference ESM features.
 10. Performed grouped feature-importance and difficult-site analyses.
+11. Wrote the final project summary.
 
 ## Dataset Summary
 
@@ -124,16 +125,9 @@ docs/structural_feature_result_summary.md
 docs/checkpoint2_validation_summary.md
 docs/checkpoint3_delta_esm_summary.md
 docs/checkpoint4_interpretability_summary.md
+docs/final_project_summary.md
 ```
 
-## Next Step
+## Final Takeaway
 
-The next planned checkpoint is final report and figure preparation.
-
-Recommended next tasks:
-
-1. Prepare a clean method summary.
-2. Create validation-result tables and figures.
-3. Summarize feature-importance results.
-4. Summarize difficult-site findings.
-5. Write the final interpretation section: interpolation vs extrapolation.
+This project demonstrates that careful validation design is essential in biological effect prediction. A model can appear highly accurate under random or mutation-held-out validation but still fail when asked to predict entirely unseen residue positions.

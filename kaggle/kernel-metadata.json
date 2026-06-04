@@ -1,13 +1,13 @@
 {
-  "id": "binivin/rbd-dms-effect-prediction-interpolation-vs-extrapolation",
-  "title": "RBD DMS Effect Prediction: Interpolation vs Extrapolation",
-  "code_file": "rbd_dms_effect_prediction_interpolation_vs_extrapolation.py",
+  "id": "binivin/rbd-dms-interpolation-vs-extrapolation",
+  "title": "RBD DMS Interpolation vs Extrapolation",
+  "code_file": "rbd_dms_interpolation_vs_extrapolation.py",
   "language": "python",
   "kernel_type": "script",
   "is_private": false,
   "enable_gpu": false,
   "enable_internet": false,
   "dataset_sources": [
-    "binivin/rbd-dms-effect-prediction-generalization-analysis"
+    "binivin/rbd-dms-effect-prediction"
   ]
 }

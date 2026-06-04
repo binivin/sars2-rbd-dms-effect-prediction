@@ -1,10 +1,10 @@
 # RBD DMS Effect Prediction and Generalization Analysis
 
+[![Kaggle Dataset](https://img.shields.io/badge/Kaggle-Dataset-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction)
+[![Kaggle Notebook](https://img.shields.io/badge/Kaggle-Notebook-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation)
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Field](https://img.shields.io/badge/Field-Bioinformatics-green)](#)
 [![ML](https://img.shields.io/badge/Method-ESM--2%20%7C%20RandomForest%20%7C%20Ridge-purple)](#)
-[![Kaggle Dataset](https://img.shields.io/badge/Kaggle-Dataset-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction)
-[![Kaggle Notebook](https://img.shields.io/badge/Kaggle-Notebook-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation)
 [![Status](https://img.shields.io/badge/Status-Final%20summary%20complete-brightgreen)](#)
 
 > Deep mutational scanning score prediction using mutation features, structure-derived annotations, reference ESM-2 embeddings, delta ESM embeddings, and validation-split analysis.
@@ -12,17 +12,6 @@
 This repository contains a computational biology pipeline for analyzing RBD deep mutational scanning data. The project evaluates whether amino-acid substitution effects on receptor binding and protein expression/folding can be reproduced using sequence, structure, and protein-language-model features.
 
 The main finding is that the model performs well when predicting new substitutions at already represented residue positions, but generalization to completely unseen residue positions remains difficult.
-
----
-
-## Kaggle
-
-| Resource | Link |
-|---|---|
-| Kaggle Dataset | https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction |
-| Kaggle Notebook | https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation |
-
-The Kaggle Dataset contains the final result summary tables and project summaries. The Kaggle Notebook provides a concise visualization-oriented version of the analysis, focusing on validation splits, feature importance, and difficult-site interpretation.
 
 ---
 
@@ -37,6 +26,19 @@ The Kaggle Dataset contains the final result summary tables and project summarie
 - Compared random split, background-held-out, mutation-held-out, and site-held-out validation.
 - Performed grouped feature-importance analysis.
 - Identified difficult residue positions under site-held-out validation.
+
+---
+
+## Live Kaggle version
+
+A public Kaggle dataset and notebook are available for viewing the final result tables, project summaries, and visualization-centered analysis workflow.
+
+| Resource | Link |
+|---|---|
+| Kaggle Notebook | [RBD DMS Interpolation vs Extrapolation](https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation) |
+| Kaggle Dataset | [RBD DMS Effect Prediction](https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction) |
+
+The Kaggle notebook provides a concise visual summary of background-held-out, mutation-held-out, and site-held-out validation, together with grouped feature-importance and difficult-site analyses. The Kaggle dataset contains generated summary tables and project summaries only; large intermediate model outputs and raw data are not included.
 
 ---
 

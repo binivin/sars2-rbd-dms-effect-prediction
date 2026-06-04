@@ -1,94 +1,80 @@
-# Kaggle Upload Guide
+# Kaggle Materials
 
-This folder contains Kaggle-ready text and metadata for publishing this project as a Kaggle Dataset and Kaggle Notebook.
+This folder contains the Kaggle companion materials for this project.
 
-## Recommended Kaggle Dataset Title
+## Published Kaggle Links
+
+| Resource | Link |
+|---|---|
+| Kaggle Dataset | https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction |
+| Kaggle Notebook | https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation |
+
+## Kaggle Dataset
+
+Recommended dataset metadata:
+
+```json
+{
+  "title": "RBD DMS Effect Prediction",
+  "id": "binivin/rbd-dms-effect-prediction",
+  "licenses": [
+    {
+      "name": "CC0-1.0"
+    }
+  ]
+}
+```
+
+The Kaggle Dataset contains concise result tables and summary documents rather than large intermediate model files.
+
+Recommended uploaded files:
 
 ```text
-RBD DMS Effect Prediction and Generalization Analysis
+background_heldout_summary_metrics.csv
+mutation_heldout_summary_metrics.csv
+delta_esm_repeated_site_heldout_summary_metrics.csv
+delta_esm_mutation_heldout_summary_metrics.csv
+feature_importance_grouped_permutation.csv
+top_difficult_sites.csv
+final_project_summary.md
+project_summary_ko.md
+README.md
+dataset-metadata.json
 ```
 
-## Recommended Dataset Subtitle
+## Kaggle Notebook
+
+Notebook title:
 
 ```text
-Processed result tables and summaries for RBD DMS score prediction using mutation, structure, reference ESM-2, and delta ESM features.
+RBD DMS Interpolation vs Extrapolation
 ```
 
-## Recommended Kaggle Dataset Description
-
-This dataset contains generated summary tables and documentation from a computational biology project analyzing RBD deep mutational scanning scores.
-
-The project evaluates whether mutation-level physicochemical features, structure-derived annotations, reference ESM-2 residue embeddings, and mutant-sequence delta ESM features can reproduce experimentally measured receptor-binding and expression/folding scores.
-
-The key focus is not only model performance, but also validation design. The analysis compares random split, background-held-out, mutation-held-out, and site-held-out validation to distinguish easy interpolation from difficult extrapolation.
-
-## Main Finding
-
-The model performs well when predicting new substitutions at already represented residue positions, but generalization to completely unseen residue positions remains difficult.
-
-## Recommended Files to Upload to Kaggle Dataset
-
-Upload generated result files from your local project folder after running the pipeline.
-
-Recommended folders/files:
+Notebook link:
 
 ```text
-artifacts/tables/rbd_baseline_normalized_model_metrics.csv
-artifacts/tables/rbd_baseline_structural_model_metrics.csv
-artifacts/tables/rbd_baseline_esm_model_metrics.csv
-artifacts/tables/repeated_site_heldout_summary_metrics.csv
-artifacts/tables/background_heldout_summary_metrics.csv
-artifacts/tables/mutation_heldout_summary_metrics.csv
-artifacts/tables/delta_esm_repeated_site_heldout_summary_metrics.csv
-artifacts/tables/delta_esm_mutation_heldout_summary_metrics.csv
-artifacts/tables/feature_importance_grouped_permutation.csv
-artifacts/tables/top_difficult_sites.csv
-docs/final_project_summary.md
-docs/project_summary_ko.md
+https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation
 ```
 
-Do not upload very large intermediate ESM embedding tables unless needed, because Kaggle pages are easier to review when the dataset contains concise result tables and summaries.
+The notebook summarizes:
 
-## Kaggle CLI Workflow
-
-Install Kaggle CLI:
-
-```bash
-pip install kaggle
-```
-
-Create a Kaggle dataset folder locally, copy the generated tables and docs into it, then place `dataset-metadata.json` in the same folder.
-
-Create the dataset:
-
-```bash
-kaggle datasets create -p kaggle_dataset_folder
-```
-
-Update the dataset later:
-
-```bash
-kaggle datasets version -p kaggle_dataset_folder -m "Update RBD DMS validation summaries"
-```
-
-## Recommended Kaggle Notebook Title
-
-```text
-RBD DMS Effect Prediction: Interpolation vs Extrapolation
-```
-
-## Recommended Notebook Outline
-
-1. Project overview
-2. Dataset summary
-3. Validation strategy
-4. Background-held-out results
-5. Mutation-held-out results
-6. Site-held-out results
-7. Feature-importance analysis
-8. Difficult-site analysis
-9. Final interpretation
+1. Background-held-out validation
+2. Mutation-held-out validation
+3. Site-held-out validation
+4. Interpolation vs extrapolation comparison
+5. Grouped feature-importance analysis
+6. Difficult-site analysis
+7. Final interpretation
 
 ## Important Interpretation
 
-This project should be interpreted as a DMS effect reproduction, interpolation, and model-limitation analysis. It should not be presented as a fully general predictor of unseen residue effects.
+This project should be interpreted as a DMS effect reproduction, interpolation, and model-limitation analysis.
+
+The main conclusion is:
+
+```text
+The model can predict new substitutions at already represented residue positions fairly well,
+but it does not reliably generalize to completely unseen residue positions.
+```
+
+Therefore, high performance under easier validation settings should not be presented as evidence of fully general mutation-effect prediction.

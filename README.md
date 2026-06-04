@@ -3,6 +3,8 @@
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Field](https://img.shields.io/badge/Field-Bioinformatics-green)](#)
 [![ML](https://img.shields.io/badge/Method-ESM--2%20%7C%20RandomForest%20%7C%20Ridge-purple)](#)
+[![Kaggle Dataset](https://img.shields.io/badge/Kaggle-Dataset-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction)
+[![Kaggle Notebook](https://img.shields.io/badge/Kaggle-Notebook-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation)
 [![Status](https://img.shields.io/badge/Status-Final%20summary%20complete-brightgreen)](#)
 
 > Deep mutational scanning score prediction using mutation features, structure-derived annotations, reference ESM-2 embeddings, delta ESM embeddings, and validation-split analysis.
@@ -10,6 +12,17 @@
 This repository contains a computational biology pipeline for analyzing RBD deep mutational scanning data. The project evaluates whether amino-acid substitution effects on receptor binding and protein expression/folding can be reproduced using sequence, structure, and protein-language-model features.
 
 The main finding is that the model performs well when predicting new substitutions at already represented residue positions, but generalization to completely unseen residue positions remains difficult.
+
+---
+
+## Kaggle
+
+| Resource | Link |
+|---|---|
+| Kaggle Dataset | https://www.kaggle.com/datasets/binivin/rbd-dms-effect-prediction |
+| Kaggle Notebook | https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation |
+
+The Kaggle Dataset contains the final result summary tables and project summaries. The Kaggle Notebook provides a concise visualization-oriented version of the analysis, focusing on validation splits, feature importance, and difficult-site interpretation.
 
 ---
 
@@ -55,8 +68,9 @@ The analysis uses public RBD deep mutational scanning datasets and a public prot
 | RBD DMS datasets | Experimental binding and expression/folding scores |
 | 6M0J structure | Structure-derived receptor-interface and distance features |
 | ESM-2 | Protein-language-model residue embeddings |
+| Kaggle Dataset | Final result tables and summary documents |
 
-Generated data files and model output tables are excluded from GitHub by `.gitignore` and can be recreated by running the pipeline.
+Generated intermediate files and model output tables are excluded from GitHub by `.gitignore`. The concise final result tables are available through Kaggle.
 
 ---
 
@@ -176,8 +190,13 @@ sars2-rbd-dms-effect-prediction/
 │  ├─ checkpoint4_interpretability_summary.md
 │  ├─ final_project_summary.md
 │  └─ project_summary_ko.md
+├─ kaggle/
+│  ├─ README.md
+│  ├─ dataset-metadata.json
+│  ├─ kernel-metadata.json
+│  └─ rbd_dms_effect_prediction_interpolation_vs_extrapolation.py
 ├─ data/                  # local generated data, excluded from GitHub
-└─ artifacts/             # generated tables and outputs, mostly excluded from GitHub
+└─ artifacts/             # generated intermediate outputs, mostly excluded from GitHub
 ```
 
 ---
@@ -208,6 +227,14 @@ python src/analyze_difficult_sites.py
 
 The ESM-related scripts may take longer on CPU because they run protein-language-model inference.
 
+### 3. View the Kaggle summary notebook
+
+A visualization-oriented summary is available here:
+
+```text
+https://www.kaggle.com/code/binivin/rbd-dms-interpolation-vs-extrapolation
+```
+
 ---
 
 ## Documentation
@@ -221,6 +248,7 @@ The ESM-related scripts may take longer on CPU because they run protein-language
 | `docs/checkpoint4_interpretability_summary.md` | Feature-importance and difficult-site analysis |
 | `docs/final_project_summary.md` | Final English project summary |
 | `docs/project_summary_ko.md` | Korean project summary |
+| `kaggle/README.md` | Kaggle dataset and notebook guide |
 
 ---
 

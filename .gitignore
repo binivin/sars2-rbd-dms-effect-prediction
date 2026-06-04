@@ -1,0 +1,14 @@
+# Generated data
+data/raw/
+data/processed/
+artifacts/tables/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
